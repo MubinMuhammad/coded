@@ -1,0 +1,53 @@
+# ------------------------------------
+# |    ______          __         __ |
+# |   / ____/___  ____/ /__  ____/ / |
+# |  / /   / __ \/ __  / _ \/ __  /  |
+# | / /___/ /_/ / /_/ /  __/ /_/ /   |
+# | \____/\____/\__,_/\___/\__,_/    |
+# |                                  |
+# -----------Sample Config------------
+
+
+# Comments starts with a '#' in the begining.
+# This is a single line comment.
+# There is no multiline comments you just
+# put more single line comments instead.
+
+# WARNING: the config shown below haven't been
+# implemented and shown how the config will be
+# in the future. This is just a skeleton of the
+# configuration. The actual Read/Write to files
+# will soon be implmeneted...
+
+# The following configuration is for
+# users of Coded.
+#
+# The Configuration Manager shall have
+# a look at `CodedConfigInternal` file
+# for more details. Some parts of that
+# file is very important!
+
+# The `change` method is meant for
+# changing existing variable like the `theme`
+# and `themeType` variables that are set by default.
+/change theme gruvboxMaterial
+/change themeType dark
+# The colorCallibration option will apply a
+# fanted effected to the colors you mentioned
+# in `theme`
+/change themeCallibration true
+
+# The `set` method creates a new variable
+# and by mentioning the files you want to configure,
+# you can call the `coded({key})` function to invoke
+# corresponding value for the key.
+#
+# The `set` method can be assigned with
+# the following syntax:
+#
+# 	/set <key> <value>
+#
+/set bg 0x000080 # the color codes can be represented with `0x` prefix.
+/set blur true
+/set blurStrength 0.3
+# You can allow more `set` methods to your liking ...
