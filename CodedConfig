@@ -30,12 +30,12 @@
 # The `change` method is meant for
 # changing existing variable like the `theme`
 # and `themeType` variables that are set by default.
-/changeTheme gruvboxMaterial # way to change the theme
-/changeThemeType dark
+/theme gruvboxMaterial # way to change the theme
+/themeType dark
 # The colorCallibration option will apply a
 # fanted effected to the colors you mentioned
 # in `theme`
-/changeThemeCallibration true
+/themeCallibration true
 
 # The `set` method creates a new variable
 # and by mentioning the files you want to configure,
