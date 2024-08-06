@@ -28,12 +28,13 @@ pub const Config = struct {
 
         while (try inputStream.readUntilDelimiterOrEof(&lineBuf, '\n')) |line| {
             var k: u32 = 0;
+
             for (line) |c| {
                 if (c == '#') break;
                 k += 1;
             }
 
-            try getCommandArgs(line[0..k], &cfg);
+            try getCommandArgs(std.mem.trimRight(u8, line[0..k], " "), &cfg);
         }
 
         return cfg;
@@ -83,7 +84,6 @@ pub const Config = struct {
             return error.InvalidCommand;
         }
 
-        // NOTE: Not working because of trailing spaces.
         if (tkn.peek() != null) return error.TooManyArgs;
     }
 };
