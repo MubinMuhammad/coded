@@ -15,4 +15,22 @@ pub fn main() !void {
     while (itr.next()) |elem| {
         std.debug.print("{s}: {s}\n", .{ elem.key_ptr.*, elem.value_ptr.* });
     }
+    itr = cfg.colorSchemes.iterator();
+    while (itr.next()) |elem| {
+        std.debug.print("{s}: {s}\n", .{ elem.key_ptr.*, elem.value_ptr.* });
+    }
+
+    itr = cfg.paths.iterator();
+    while (itr.next()) |elem| {
+        std.debug.print("{s}: {s}\n", .{ elem.key_ptr.*, elem.value_ptr.* });
+    }
+
+    std.debug.print(
+        "{s}, {s}, {?}\n",
+        .{
+            cfg.theme,
+            cfg.themeType,
+            cfg.themeCallibration,
+        },
+    );
 }

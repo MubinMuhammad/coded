@@ -8,8 +8,8 @@ pub const ConfigError = error{
 
 pub const Config = struct {
     setBuf: std.BufMap,
-    theme: []const u8,
-    themeType: []const u8,
+    theme: [128]u8,
+    themeType: [128]u8,
     themeCallibration: bool,
     paths: std.BufMap,
     colorSchemes: std.BufMap,
@@ -71,11 +71,14 @@ pub const Config = struct {
         if (std.mem.eql(u8, command.items, "set")) {
             try cfg.*.setBuf.put(tkn.next().?, tkn.next().?);
         } else if (std.mem.eql(u8, command.items, "theme")) {
-            cfg.*.theme = tkn.next().?;
+            std.mem.copyForwards(u8, &cfg.theme, tkn.next().?);
         } else if (std.mem.eql(u8, command.items, "themeType")) {
-            cfg.*.themeType = tkn.next().?;
+            std.mem.copyForwards(u8, &cfg.themeType, tkn.next().?);
         } else if (std.mem.eql(u8, command.items, "themeCallibration")) {
-            cfg.*.themeCallibration = if (std.mem.eql(u8, tkn.next().?, "true")) true else false;
+            cfg.*.themeCallibration = if (std.mem.eql(u8, tkn.next().?, "true"))
+                true
+            else
+                false;
         } else if (std.mem.eql(u8, command.items, "addPath")) {
             try cfg.*.paths.put(tkn.next().?, tkn.next().?);
         } else if (std.mem.eql(u8, command.items, "addTheme")) {
