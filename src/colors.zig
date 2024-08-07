@@ -18,13 +18,13 @@ pub const Color = struct {
     }
 
     pub fn rgbToHsl(rgb: Rgb) Hsl {
-        const R, const G, const B: f32 = .{
+        const R: f32, const G: f32, const B: f32 = .{
             rgb.r / 255,
             rgb.g / 255,
             rgb.b / 255,
         };
 
-        const M, const m: f32 = .{
+        const M: f32, const m: f32 = .{
             @max(R, @max(G, B)),
             @min(R, @min(G, B)),
         };
@@ -58,16 +58,18 @@ pub const Color = struct {
         if ((!isValidHex(str)) or (@sizeOf(T) * 8 < str.len * 4))
             return ColorError.InvalidHexString;
 
-        var i, var j: usize = .{ str.len - 1, 0 };
+        var i: i32, var j: i32 = .{ @intCast(str.len - 1), 0 };
         var out: T = 0;
 
         while (i >= 0) : (i -= 1) {
-            out |= hexToU8(str[i]) * std.math.pow(usize, 16, j);
+            out |= @intCast(try hexCharToU8(str[@intCast(i)]) * std.math.pow(i32, 16, j));
             j += 1;
         }
+
+        return out;
     }
 
-    fn hexToU8(c: u8) !u8 {
+    fn hexCharToU8(c: u8) !u8 {
         return switch (c) {
             '0'...'9' => c - '0',
             'a'...'z' => (c - 'a') + 10,
@@ -77,8 +79,15 @@ pub const Color = struct {
     }
 
     fn isValidHex(str: []const u8) bool {
-        if (str.len == 0 or str.ptr == 0) return false;
         for (str) |c| if (!std.ascii.isHex(c)) return false;
         return true;
     }
 };
+
+test Color {
+    try std.testing.expect(try Color.strToHex(Hex, "0997f6") == 0x0997F6);
+    try std.testing.expect(try Color.strToHex(Hex, "00ffbf") == 0x00FFBF);
+    try std.testing.expect(try Color.strToHex(Hex, "ffffff") == 0xFFFFFF);
+    try std.testing.expect(try Color.strToHex(Hex, "daa062") == 0xDAA062);
+    try std.testing.expect(try Color.strToHex(u32, "daa0620f") == 0xDAA0620F);
+}
