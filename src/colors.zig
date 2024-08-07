@@ -14,10 +14,47 @@ pub const Color = struct {
         if (hexStr.len != 6) return ColorError.InvalidHexString;
 
         const out: Color = undefined;
-        out.hex = hexStrToNum(Hex, hexStr);
+        out.hex = strToHex(Hex, hexStr);
     }
 
-    fn hexStrToNum(comptime T: type, str: []const u8) !T {
+    pub fn rgbToHsl(rgb: Rgb) Hsl {
+        const R, const G, const B: f32 = .{
+            rgb.r / 255,
+            rgb.g / 255,
+            rgb.b / 255,
+        };
+
+        const M, const m: f32 = .{
+            @max(R, @max(G, B)),
+            @min(R, @min(G, B)),
+        };
+
+        const C: f32 = M - m;
+
+        var out: Hsl = .{ .h = 0, .s = 0, .l = 0 };
+
+        if (C != 0) {
+            if (M == R) out.h = @mod((G - B) / C, 6);
+            if (M == G) out.h = (B - R) / C + 2;
+            if (M == B) out.h = (R - G) / C + 4;
+            out.h *= 60;
+        }
+
+        out.l = (M + m) / 2;
+        if (C != 0) out.s = C / (1 - @abs(2 * out.l - 1));
+
+        return out;
+    }
+
+    pub fn hexToRgb(hex: Hex) Rgb {
+        return Rgb{
+            .r = (hex >> 16) & 0xFF,
+            .g = (hex >> 8) & 0xFF,
+            .b = (hex) & 0xFF,
+        };
+    }
+
+    pub fn strToHex(comptime T: type, str: []const u8) !T {
         if ((!isValidHex(str)) or (@sizeOf(T) * 8 < str.len * 4))
             return ColorError.InvalidHexString;
 
