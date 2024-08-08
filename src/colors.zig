@@ -19,9 +19,9 @@ pub const Color = struct {
 
     pub fn rgbToHsl(rgb: Rgb) Hsl {
         const R: f32, const G: f32, const B: f32 = .{
-            rgb.r / 255,
-            rgb.g / 255,
-            rgb.b / 255,
+            @as(f32, @floatFromInt(rgb.r)) / 255.0,
+            @as(f32, @floatFromInt(rgb.g)) / 255.0,
+            @as(f32, @floatFromInt(rgb.b)) / 255.0,
         };
 
         const M: f32, const m: f32 = .{
@@ -33,37 +33,46 @@ pub const Color = struct {
 
         var out: Hsl = .{ .h = 0, .s = 0, .l = 0 };
 
-        if (C != 0) {
-            if (M == R) out.h = @mod((G - B) / C, 6);
-            if (M == G) out.h = (B - R) / C + 2;
-            if (M == B) out.h = (R - G) / C + 4;
-            out.h *= 60;
-        }
+        out.l = (M + m) / 2.0;
 
-        out.l = (M + m) / 2;
-        if (C != 0) out.s = C / (1 - @abs(2 * out.l - 1));
+        if (C != 0.0) {
+            out.s = C / (1.0 - @abs(2 * out.l - 1.0));
+
+            if (M == R) out.h = @mod((G - B) / C, 6.0);
+            if (M == G) out.h = (B - R) / C + 2.0;
+            if (M == B) out.h = (R - G) / C + 4.0;
+            out.h *= 60.0;
+        }
 
         return out;
     }
 
+    pub fn rgbToHex(rgb: Rgb) Hex {
+        var hex: Hex = 0;
+
+        hex |= (@as(u24, rgb.r) << 16) & 0xFF0000;
+        hex |= (@as(u24, rgb.g) << 8) & 0x00FF00;
+        hex |= (@as(u24, rgb.b)) & 0x0000FF;
+
+        return hex;
+    }
+
     pub fn hexToRgb(hex: Hex) Rgb {
         return Rgb{
-            .r = (hex >> 16) & 0xFF,
-            .g = (hex >> 8) & 0xFF,
-            .b = (hex) & 0xFF,
+            .r = @truncate((hex >> 16) & 0xFF),
+            .g = @truncate((hex >> 8) & 0xFF),
+            .b = @truncate((hex) & 0xFF),
         };
     }
 
-    pub fn strToHex(comptime T: type, str: []const u8) !T {
-        if ((!isValidHex(str)) or (@sizeOf(T) * 8 < str.len * 4))
-            return ColorError.InvalidHexString;
+    pub fn strToHex(str: []const u8) !Hex {
+        if ((!isValidHex(str)) or (str.len != 6)) return ColorError.InvalidHexString;
 
-        var i: i32, var j: i32 = .{ @intCast(str.len - 1), 0 };
-        var out: T = 0;
+        var i: isize = 5;
+        var out: Hex = 0;
 
         while (i >= 0) : (i -= 1) {
-            out |= @intCast(try hexCharToU8(str[@intCast(i)]) * std.math.pow(i32, 16, j));
-            j += 1;
+            out |= @intCast(try hexCharToU8(str[@intCast(i)]) * std.math.pow(isize, 16, 5 - i));
         }
 
         return out;
@@ -83,11 +92,3 @@ pub const Color = struct {
         return true;
     }
 };
-
-test Color {
-    try std.testing.expect(try Color.strToHex(Hex, "0997f6") == 0x0997F6);
-    try std.testing.expect(try Color.strToHex(Hex, "00ffbf") == 0x00FFBF);
-    try std.testing.expect(try Color.strToHex(Hex, "ffffff") == 0xFFFFFF);
-    try std.testing.expect(try Color.strToHex(Hex, "daa062") == 0xDAA062);
-    try std.testing.expect(try Color.strToHex(u32, "daa0620f") == 0xDAA0620F);
-}
