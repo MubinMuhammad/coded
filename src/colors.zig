@@ -17,6 +17,45 @@ pub const Color = struct {
         out.hex = strToHex(Hex, hexStr);
     }
 
+    pub fn hslToRgb(hsl: Hsl) Rgb {
+        const C = (1 - @abs(2 * hsl.l - 1)) * hsl.s;
+        const X = C * (1 - @abs(@mod(hsl.h / 60, 2) - 1));
+        const m = hsl.l - C / 2;
+        var out: [3]f32 = undefined;
+
+        if (0 <= hsl.h and hsl.h < 60) {
+            out[0] = C;
+            out[1] = X;
+            out[2] = 0.0;
+        } else if (60 <= hsl.h and hsl.h < 120) {
+            out[0] = X;
+            out[1] = C;
+            out[2] = 0.0;
+        } else if (120 <= hsl.h and hsl.h < 180) {
+            out[0] = 0.0;
+            out[1] = C;
+            out[2] = X;
+        } else if (180 <= hsl.h and hsl.h < 240) {
+            out[0] = 0.0;
+            out[1] = X;
+            out[2] = C;
+        } else if (240 <= hsl.h and hsl.h < 300) {
+            out[0] = X;
+            out[1] = 0.0;
+            out[2] = C;
+        } else if (300 <= hsl.h and hsl.h <= 360) {
+            out[0] = C;
+            out[1] = 0.0;
+            out[2] = X;
+        }
+
+        return Rgb{
+            .r = @as(u8, @intFromFloat((out[0] + m) * 255)),
+            .g = @as(u8, @intFromFloat((out[1] + m) * 255)),
+            .b = @as(u8, @intFromFloat((out[2] + m) * 255)),
+        };
+    }
+
     pub fn rgbToHsl(rgb: Rgb) Hsl {
         const R: f32, const G: f32, const B: f32 = .{
             @as(f32, @floatFromInt(rgb.r)) / 255.0,

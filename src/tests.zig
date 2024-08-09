@@ -26,9 +26,9 @@ test Color {
     try std.testing.expect(Color.rgbToHex(Rgb{ .r = 64, .g = 191, .b = 70 }) == 0x40BF46);
     try std.testing.expect(Color.rgbToHex(Rgb{ .r = 196, .g = 213, .b = 114 }) == 0xC4D572);
 
-    // I Didn't know what to do with HSL tests.
-    // So, I just checked if the results of Color.rgbToHsl() match
-    // with hslpicker.com, and It did.
+    // I Didn't know how to do with HSL tests.
+    // So, I just checked if the results of Color.rgbToHsl() and
+    // Color.hslToRgb() match with hslpicker.com, and It did.
     //
     // NOTE: the `s`, 'l' will be in range of 0 to 1 in
     // Color.rgbToHsl().
